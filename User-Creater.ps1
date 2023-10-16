@@ -4,8 +4,14 @@ $TemplateUserObj = Get-ADUser -Identity $TemplateUser
 
 #Get template user OU and group membership
 $TemplateUserOUArray = $TemplateUserObj.DistinguishedName.Split(",")[1..($TemplateUserObj.DistinguishedName.Length - 1)]
-$TemplateUserGroupsArray = (Get-ADPrincipalGroupMembership $TemplateUserObj).name
-Write-Output $TemplateUserGroupsArray
+$TemplateUserGroupsArray = @()
+foreach ($Group in (Get-ADPrincipalGroupMembership $TemplateUserObj).name)
+{
+    if ($Group -ne "Domain Users")
+    {
+        $TemplateUserGroupsArray += $Group
+    }
+}
 
 #Get new user
 $NewUser = Read-Host "Enter new user"
